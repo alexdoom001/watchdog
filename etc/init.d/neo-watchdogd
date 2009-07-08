@@ -1,0 +1,23 @@
+#!/bin/bash
+
+NAME="neo-watchdogd"
+DESC="neo watchdog"
+CONFIG="/etc/neo-watchdog.conf"
+
+export NAME DESC
+
+sanitize () {
+	# Sanitize config on start, if there are any services configured
+	# they will be added on config load
+	sed -ri "/^\s*#?\s*check_services.*$/d /^\s*#?\s*check_script.*$/d" $CONFIG
+}
+
+case "$1" in
+  start)
+	sanitize
+	service start "-N-20 -m -b"
+	;;
+  *)
+	service "$@"
+	;;
+esac
